@@ -16,9 +16,15 @@ export class ClientesComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.clienteService.getClientes().pipe(
-      tap(clientes => this.clientes = clientes)
-    ).subscribe();
+    let page = 0;
+    this.clienteService.getClientes(page).pipe(
+      //Tambien se puede poner el contenido del subscribe en el tap y dejar el subscribe vacio pero no se puede borrar
+      tap(response => {
+        (response.content as Cliente[]).forEach(cliente => {
+          console.log(cliente.nombre);
+        });
+      })
+    ).subscribe(response => this.clientes = response.content as Cliente[]);
   }
 
   delete(cliente: Cliente): void {

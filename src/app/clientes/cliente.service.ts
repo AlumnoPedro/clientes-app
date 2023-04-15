@@ -15,29 +15,28 @@ export class ClienteService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  getClientes(): Observable<Cliente[]> {
+  getClientes(page: number): Observable<any> {
     //return of(CLIENTES);
-    return this.http.get(this.urlEndPoint).pipe(
-      //Aquí el response es de tipo Object por lo que hay que pasar de object a cliente para hacer el foreach
-      tap(response => {
-        let clientes = response as Cliente[];
-        clientes.forEach( cliente => {
+    return this.http.get(this.urlEndPoint + "/page/" + page).pipe(
+      //Como la paginacion ya no trae los clientes en la raiz hay que cambiar el response a un tipo flexxible para
+      //recuperar el content (la parte del json donde estan los clientes)
+      tap((response:any) => {
+        (response.content as Cliente[]).forEach( cliente => {
           console.log(cliente.nombre);
         }
         ) 
       }),
-      map(response => { 
-        let clientes = response as Cliente[];
-        return clientes.map(cliente => {
+      map((response:any) => { 
+        (response.content as Cliente[]).map(cliente => {
           cliente.nombre = cliente.nombre.toUpperCase();
           //cliente.createAt = formatDate(cliente.createAt,'EEEE dd, MMMM yyyy', 'es');
           return cliente;
         });
+        return response;
       }
       ),
-      //Aqui ya se ha hecho el map de response(Object) a Cliente por lo que podemos hacer el foreach de clientes.
       tap(response => {
-        response.forEach( cliente => {
+        (response.content as Cliente[]).forEach( cliente => {
           console.log(cliente.nombre);
         }
         ) 
