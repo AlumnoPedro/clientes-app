@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { formatDate } from '@angular/common';
 import { Cliente } from './cliente';
 import { Observable, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
@@ -19,6 +18,14 @@ export class ClienteService {
   getClientes(): Observable<Cliente[]> {
     //return of(CLIENTES);
     return this.http.get(this.urlEndPoint).pipe(
+      //Aquí el response es de tipo Object por lo que hay que pasar de object a cliente para hacer el foreach
+      tap(response => {
+        let clientes = response as Cliente[];
+        clientes.forEach( cliente => {
+          console.log(cliente.nombre);
+        }
+        ) 
+      }),
       map(response => { 
         let clientes = response as Cliente[];
         return clientes.map(cliente => {
@@ -27,7 +34,14 @@ export class ClienteService {
           return cliente;
         });
       }
-      )
+      ),
+      //Aqui ya se ha hecho el map de response(Object) a Cliente por lo que podemos hacer el foreach de clientes.
+      tap(response => {
+        response.forEach( cliente => {
+          console.log(cliente.nombre);
+        }
+        ) 
+      })
     );
   }
 
