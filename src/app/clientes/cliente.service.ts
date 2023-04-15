@@ -38,8 +38,7 @@ export class ClienteService {
       tap(response => {
         (response.content as Cliente[]).forEach( cliente => {
           console.log(cliente.nombre);
-        }
-        ) 
+        }) 
       })
     );
   }
